@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Oscar — the Knowledge Graph Expert Agent | by Astra AI</title>
+<meta name="description" content="Oscar is the AI expert agent for knowledge graphs, Neo4j and GraphRAG — grounded in the complete official Neo4j docs, with citations on every answer. Free tier, MCP + REST, 2-minute setup." />
+<meta property="og:title" content="Oscar — the Knowledge Graph Expert Agent" />
+<meta property="og:description" content="Stop guessing Cypher. Cited answers from the complete official Neo4j documentation corpus. Free tier, MCP + REST." />
+<meta property="og:image" content="https://oscar.theastraway.com/img/hero-library.jpg" />
+<meta property="og:url" content="https://oscar.theastraway.com" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D0B08'/%3E%3Ccircle cx='32' cy='32' r='17' fill='none' stroke='%23C9963B' stroke-width='4'/%3E%3Ccircle cx='32' cy='15' r='4' fill='%23E3B45C'/%3E%3Ccircle cx='47' cy='40' r='4' fill='%23E3B45C'/%3E%3Ccircle cx='17' cy='40' r='4' fill='%23E3B45C'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#0D0B08; --ink-raised:#161209; --parchment:#F2E8D5; --parchment-dim:#B7AA90;
+    --brass:#C9963B; --brass-bright:#E3B45C; --oxblood:#8C2B2B; --hairline:rgba(242,232,213,0.08);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--ink);color:var(--parchment);font-family:'Inter',sans-serif;font-size:1.05rem;line-height:1.7;overflow-x:hidden}
+  h1,h2,h3{font-family:'Playfair Display',serif;line-height:1.15}
+  em{color:var(--brass-bright);font-style:italic}
+  a{color:var(--parchment-dim);text-decoration:none;transition:color .25s}
+  a:hover{color:var(--brass-bright)}
+  code,pre{font-family:'JetBrains Mono',monospace}
+  section{padding:6.5rem 1.5rem;position:relative}
+  .wrap{max-width:1100px;margin:0 auto}
+  .eyebrow{font-size:.8rem;letter-spacing:.22em;text-transform:uppercase;color:var(--brass);font-weight:600;margin-bottom:1rem}
+  .reveal{opacity:0;transform:translateY(28px)}
+  .no-motion .reveal{opacity:1 !important;transform:none !important}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+      padding:1rem 1.75rem;transition:background .35s,border-color .35s;border-bottom:1px solid transparent}
+  nav.scrolled{background:rgba(13,11,8,.92);backdrop-filter:blur(10px);border-bottom-color:var(--hairline)}
+  .brand{display:flex;align-items:baseline;gap:.6rem}
+  .brand .o{font-family:'Playfair Display',serif;font-weight:800;font-size:1.5rem;color:var(--parchment);letter-spacing:.04em}
+  .brand .by{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--parchment-dim)}
+  .navlinks{display:flex;gap:1.75rem;font-size:.9rem;font-weight:500}
+  @media(max-width:760px){.navlinks a:not(.gh){display:none}}
+
+  /* HERO */
+  .hero{min-height:100svh;display:flex;align-items:center;padding-top:8rem}
+  .hero-bg{position:absolute;inset:0;overflow:hidden;z-index:-1}
+  .hero-bg img{width:100%;height:118%;object-fit:cover;object-position:center 30%}
+  .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(13,11,8,.45) 0%,rgba(13,11,8,.55) 45%,rgba(13,11,8,.96) 92%,var(--ink) 100%)}
+  .hero h1{font-size:clamp(2.4rem,6vw,4.8rem);font-weight:800;max-width:13ch}
+  .hero p.sub{max-width:34rem;margin:1.5rem 0 2.4rem;color:var(--parchment);font-size:1.15rem}
+  .cta-row{display:flex;gap:1rem;flex-wrap:wrap}
+  .btn{display:inline-block;padding:.95rem 1.9rem;border-radius:8px;font-weight:600;font-size:1rem;cursor:pointer;transition:all .25s;border:1px solid transparent}
+  .btn-brass{background:var(--brass);color:var(--ink)}
+  .btn-brass:hover{background:var(--brass-bright);color:var(--ink);box-shadow:0 0 32px rgba(201,150,59,.45)}
+  .btn-ghost{border-color:rgba(242,232,213,.35);color:var(--parchment)}
+  .btn-ghost:hover{border-color:var(--brass-bright);color:var(--brass-bright)}
+  @media(max-width:760px){.cta-row .btn{width:100%;text-align:center}}
+
+  /* PROOF STRIP */
+  .proof{padding:2.5rem 1.5rem;border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline)}
+  .proof .wrap{display:flex;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+  .proof .item{display:flex;align-items:center;gap:.7rem;color:var(--parchment-dim);font-size:.95rem;font-weight:500}
+  .proof .dot{width:8px;height:8px;border-radius:50%;background:var(--brass);box-shadow:0 0 10px rgba(201,150,59,.8);flex:none}
+
+  /* DEMO */
+  .demo-card{background:var(--ink-raised);border:1px solid var(--hairline);border-radius:14px;padding:2rem;margin-top:2.5rem}
+  .chips{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.2rem}
+  .chip{font-size:.83rem;padding:.45rem .9rem;border:1px solid rgba(242,232,213,.2);border-radius:999px;color:var(--parchment-dim);cursor:pointer;background:none;font-family:'Inter',sans-serif;transition:all .25s}
+  .chip:hover{border-color:var(--brass);color:var(--brass-bright)}
+  .ask-row{display:flex;gap:.8rem}
+  @media(max-width:760px){.ask-row{flex-direction:column}}
+  #question{flex:1;background:var(--ink);border:1px solid rgba(242,232,213,.2);border-radius:8px;padding:.95rem 1.1rem;color:var(--parchment);font-family:'Inter',sans-serif;font-size:1rem;resize:vertical;min-height:3.3rem}
+  #question:focus{outline:none;border-color:var(--brass)}
+  #answer-box{display:none;margin-top:1.6rem;border:1px solid rgba(201,150,59,.35);border-radius:10px;padding:1.4rem 1.6rem;background:rgba(201,150,59,.04);font-size:.94rem;white-space:pre-wrap;font-family:'JetBrains Mono',monospace;line-height:1.65;max-height:480px;overflow-y:auto}
+  #answer-meta{display:none;margin-top:.7rem;font-size:.8rem;color:var(--parchment-dim)}
+  .cursor{display:inline-block;width:9px;height:1.1em;background:var(--brass);animation:blink 1s steps(1) infinite;vertical-align:text-bottom}
+  @keyframes blink{50%{opacity:0}}
+
+  /* CORPUS */
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2.5rem}
+  @media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--ink-raised);border:1px solid var(--hairline);border-radius:12px;padding:1.5rem;transition:transform .3s,border-color .3s}
+  .card:hover{transform:translateY(-2px);border-color:rgba(201,150,59,.4)}
+  .card h3{font-size:1.15rem;margin-bottom:.5rem;color:var(--parchment)}
+  .card p{font-size:.9rem;color:var(--parchment-dim);line-height:1.55}
+  .card.wide{grid-column:1/-1;display:flex;gap:1.2rem;align-items:center;border-color:rgba(201,150,59,.3)}
+  .card.wide .pulse{width:10px;height:10px;border-radius:50%;background:var(--brass-bright);box-shadow:0 0 14px rgba(227,180,92,.9);flex:none;animation:pulseglow 2.4s ease-in-out infinite}
+  @keyframes pulseglow{50%{box-shadow:0 0 4px rgba(227,180,92,.4)}}
+  .no-motion .pulse,.no-motion .cursor{animation:none}
+
+  /* QUICKSTART */
+  .tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin:2.2rem 0 0}
+  .tab{padding:.55rem 1.1rem;border-radius:8px 8px 0 0;border:1px solid var(--hairline);border-bottom:none;background:none;color:var(--parchment-dim);font-family:'Inter',sans-serif;font-size:.9rem;font-weight:500;cursor:pointer}
+  .tab.active{background:var(--ink-raised);color:var(--brass-bright);border-color:rgba(201,150,59,.35)}
+  .codeblock{position:relative;background:var(--ink-raised);border:1px solid rgba(201,150,59,.35);border-radius:0 10px 10px 10px;padding:1.5rem;overflow-x:auto}
+  .codeblock pre{font-size:.88rem;line-height:1.6;color:var(--parchment)}
+  .copy-btn{position:absolute;top:.8rem;right:.8rem;font-size:.75rem;padding:.35rem .8rem;border:1px solid rgba(242,232,213,.25);border-radius:6px;background:var(--ink);color:var(--parchment-dim);cursor:pointer;font-family:'Inter',sans-serif}
+  .copy-btn:hover{color:var(--brass-bright);border-color:var(--brass)}
+
+  /* PRICING */
+  .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2.5rem}
+  @media(max-width:900px){.plans{grid-template-columns:1fr}.plan.featured{order:-1}}
+  .plan{background:var(--ink-raised);border:1px solid var(--hairline);border-radius:14px;padding:2.2rem 1.9rem;display:flex;flex-direction:column}
+  .plan.featured{border-color:var(--brass);box-shadow:0 0 44px rgba(201,150,59,.14)}
+  .plan .tier{font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);font-weight:600}
+  .plan .price{font-family:'Playfair Display',serif;font-size:2.7rem;font-weight:800;margin:.7rem 0 .2rem}
+  .plan .per{font-size:.85rem;color:var(--parchment-dim);margin-bottom:1.4rem}
+  .plan ul{list-style:none;flex:1;margin-bottom:1.8rem}
+  .plan li{font-size:.92rem;color:var(--parchment-dim);padding:.38rem 0 .38rem 1.5rem;position:relative}
+  .plan li::before{content:"◆";position:absolute;left:0;color:var(--brass);font-size:.6rem;top:.72rem}
+  .plan .btn{text-align:center}
+
+  /* ORIGIN */
+  .origin .wrap{display:grid;grid-template-columns:2fr 3fr;gap:3.5rem;align-items:center}
+  @media(max-width:860px){.origin .wrap{grid-template-columns:1fr}}
+  .origin img{width:100%;border-radius:14px;border:1px solid rgba(201,150,59,.3)}
+  .origin p{color:var(--parchment-dim);margin-top:1.2rem}
+  .origin p strong{color:var(--parchment)}
+
+  footer{border-top:1px solid var(--hairline);padding:3rem 1.5rem;font-size:.88rem;color:var(--parchment-dim)}
+  footer .wrap{display:flex;justify-content:space-between;gap:1.5rem;flex-wrap:wrap}
+  footer .links{display:flex;gap:1.6rem}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="brand"><span class="o">OSCAR</span><span class="by">by Astra AI</span></div>
+  <div class="navlinks">
+    <a href="#demo">Demo</a><a href="#corpus">Corpus</a><a href="#quickstart">Quickstart</a><a href="#pricing">Pricing</a>
+    <a class="gh" href="https://github.com/theastraway/oscar" target="_blank" rel="noopener">GitHub ↗</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"><img id="hero-img" src="/img/hero-library.jpg" alt="A vast dark library whose shelves dissolve into a glowing graph constellation" /></div>
+  <div class="wrap">
+    <p class="eyebrow reveal">By Astra AI</p>
+    <h1 class="reveal">Stop guessing <em>Cypher</em>.</h1>
+    <p class="sub reveal">Oscar is the AI expert agent for knowledge graphs, Neo4j and GraphRAG — grounded in the complete official Neo4j documentation, with citations on every answer. He reads new ML research 24/7, so nothing he tells you is stale.</p>
+    <div class="cta-row reveal">
+      <a class="btn btn-brass" href="#demo">Ask Oscar free</a>
+      <a class="btn btn-ghost" href="https://github.com/theastraway/oscar" target="_blank" rel="noopener">View on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<div class="proof">
+  <div class="wrap">
+    <div class="item reveal"><span class="dot"></span>Complete official Neo4j docs corpus</div>
+    <div class="item reveal"><span class="dot"></span>Citations on every answer</div>
+    <div class="item reveal"><span class="dot"></span>New ML research ingested 24/7</div>
+  </div>
+</div>
+
+<section id="demo">
+  <div class="wrap">
+    <p class="eyebrow reveal">Live demo — the real free tier</p>
+    <h2 class="reveal">Ask him <em>anything</em> about graphs.</h2>
+    <div class="demo-card reveal">
+      <div class="chips">
+        <button class="chip">How do I create a vector index in Neo4j?</button>
+        <button class="chip">When does MERGE create duplicates?</button>
+        <button class="chip">Which GDS algorithm for community detection?</button>
+        <button class="chip">Vector index vs full-text — when to use which?</button>
+      </div>
+      <div class="ask-row">
+        <textarea id="question" rows="2" placeholder="Type a Neo4j / knowledge-graph / GraphRAG question…"></textarea>
+        <button class="btn btn-brass" id="ask-btn">Ask Oscar</button>
+      </div>
+      <div id="answer-box"></div>
+      <div id="answer-meta"></div>
+    </div>
+  </div>
+</section>
+
+<section id="corpus">
+  <div class="wrap">
+    <p class="eyebrow reveal">What he knows</p>
+    <h2 class="reveal">Grounded in the <em>official</em> corpus.</h2>
+    <div class="grid">
+      <div class="card reveal"><h3>Cypher Manual</h3><p>Full query-language syntax and semantics — verifiable, cited.</p></div>
+      <div class="card reveal"><h3>Operations Manual</h3><p>Deployment, clustering, backup, security.</p></div>
+      <div class="card reveal"><h3>Graph Data Science</h3><p>Algorithms, embeddings, pipelines, projections.</p></div>
+      <div class="card reveal"><h3>APOC</h3><p>The real procedures. No inventions.</p></div>
+      <div class="card reveal"><h3>GenAI Plugin</h3><p>Vector indexes, embeddings, similarity functions.</p></div>
+      <div class="card reveal"><h3>Getting Started</h3><p>Modeling foundations done right.</p></div>
+      <div class="card reveal"><h3>Drivers</h3><p>Language drivers and integration patterns.</p></div>
+      <div class="card reveal"><h3>Aura</h3><p>Managed-cloud specifics and limits.</p></div>
+      <div class="card wide reveal"><span class="pulse"></span><div><h3>ML research feed — always on</h3><p>Oscar ingests new machine-learning research around the clock. GraphRAG, agent memory, graph ML — his knowledge moves with the field, not a training cutoff.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="quickstart">
+  <div class="wrap">
+    <p class="eyebrow reveal">Quickstart</p>
+    <h2 class="reveal">In your editor in <em>two minutes</em>.</h2>
+    <div class="reveal">
+      <div class="tabs">
+        <button class="tab active" data-tab="cc">Claude Code</button>
+        <button class="tab" data-tab="cd">Claude Desktop</button>
+        <button class="tab" data-tab="cu">Cursor</button>
+        <button class="tab" data-tab="rest">REST</button>
+      </div>
+      <div class="codeblock">
+        <button class="copy-btn" id="copy-btn">Copy</button>
+        <pre id="code-pane">claude mcp add oscar -- npx -y github:theastraway/oscar</pre>
+      </div>
+      <p style="margin-top:1rem;font-size:.9rem;color:var(--parchment-dim)">Free tier needs no signup, no key. Pro users add <code>OSCAR_API_KEY</code>. Full docs on <a href="https://github.com/theastraway/oscar" target="_blank" rel="noopener">GitHub</a>.</p>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <p class="eyebrow reveal">Pricing</p>
+    <h2 class="reveal">Start free. <em>Stay</em> for the receipts.</h2>
+    <div class="plans">
+      <div class="plan reveal">
+        <span class="tier">Free</span>
+        <div class="price">$0</div><div class="per">forever</div>
+        <ul><li>10 cited queries per day</li><li>MCP + REST access</li><li>Full official docs corpus</li><li>No signup required</li></ul>
+        <a class="btn btn-ghost" href="#quickstart">Start now</a>
+      </div>
+      <div class="plan featured reveal">
+        <span class="tier">Pro</span>
+        <div class="price">$20</div><div class="per">per month</div>
+        <ul><li>Unlimited fair-use queries</li><li>Priority latency</li><li>Personal API key</li><li>Email support</li></ul>
+        <a class="btn btn-brass" href="https://buy.stripe.com/5kQ6oG5Y31k57oA7D3e7m00" target="_blank" rel="noopener">Get Oscar Pro</a>
+      </div>
+      <div class="plan reveal">
+        <span class="tier">Team / API</span>
+        <div class="price">$99</div><div class="per">per month</div>
+        <ul><li>5 seats</li><li>Dedicated API keys</li><li>Higher rate limits</li><li>Integration support</li></ul>
+        <a class="btn btn-ghost" href="https://buy.stripe.com/7sYfZg5Y30g1bEQcXne7m01" target="_blank" rel="noopener">Get Oscar Team</a>
+      </div>
+    </div>
+    <p class="reveal" style="margin-top:1.4rem;font-size:.85rem;color:var(--parchment-dim)">$20/month is what developers already pay for a serious AI assistant — Oscar is the one that specializes. A human Neo4j consultant bills more than this per quarter hour.</p>
+  </div>
+</section>
+
+<section class="origin">
+  <div class="wrap">
+    <img class="reveal" id="portrait" src="/img/oscar-portrait.jpg" alt="Oscar — the scholarly AI librarian at his desk" />
+    <div>
+      <p class="eyebrow reveal">Why he exists</p>
+      <h2 class="reveal">We built him to grade <em>our own</em> agents.</h2>
+      <p class="reveal">Every agent we ship at Astra AI gets reviewed by an internal expert — a scholarly, slightly ruthless AI librarian who checks their work against actual documentation, not vibes. That's Oscar. He runs our lab: grading agents daily, opening tickets on what's weak, and maintaining the models and ontology everything else relies on.</p>
+      <p class="reveal">He made our agents smarter. Now he can make yours smarter too. <strong>Backed by MIND</strong>, Astra AI's persistent memory and knowledge-graph platform, Oscar remembers your project context across sessions — the second conversation starts where the first one ended.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 Astra AI, Inc. · Oscar remembers.</div>
+    <div class="links">
+      <a href="https://github.com/theastraway/oscar" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://m-i-n-d.ai" target="_blank" rel="noopener">MIND</a>
+      <a href="mailto:anthony@theastraway.com">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced || !window.gsap) document.documentElement.classList.add('no-motion');
+
+  // Nav state over hero
+  var nav = document.getElementById('nav');
+  addEventListener('scroll', function(){ nav.classList.toggle('scrolled', scrollY > 80); }, {passive:true});
+
+  if (!reduced && window.gsap) {
+    gsap.registerPlugin(ScrollTrigger);
+    // Entrances — one-shot fade-ups, staggered per section batch
+    ScrollTrigger.batch('.reveal', {
+      start: 'top 88%',
+      once: true,
+      onEnter: function(els){ gsap.to(els, {opacity:1, y:0, duration:.9, ease:'power3.out', stagger:.08}); }
+    });
+    // Hero parallax + portrait drift — eased catch-up, never raw scrub:true
+    gsap.to('#hero-img', {yPercent:-12, ease:'none',
+      scrollTrigger:{trigger:'.hero', start:'top top', end:'bottom top', scrub:1.2}});
+    gsap.to('#portrait', {y:-20, ease:'none',
+      scrollTrigger:{trigger:'.origin', start:'top bottom', end:'bottom top', scrub:1.2}});
+  }
+  // Reveal fallback — nothing may stay hidden (reduced motion, no-JS-lib, missed intersections)
+  setTimeout(function(){
+    document.querySelectorAll('.reveal').forEach(function(el){
+      if (getComputedStyle(el).opacity === '0') { el.style.opacity = 1; el.style.transform = 'none'; }
+    });
+  }, 1500);
+
+  // Quickstart tabs
+  var SNIPPETS = {
+    cc: 'claude mcp add oscar -- npx -y github:theastraway/oscar',
+    cd: '{\n  "mcpServers": {\n    "oscar": {\n      "command": "npx",\n      "args": ["-y", "github:theastraway/oscar"]\n    }\n  }\n}',
+    cu: '// .cursor/mcp.json\n{\n  "mcpServers": {\n    "oscar": {\n      "command": "npx",\n      "args": ["-y", "github:theastraway/oscar"]\n    }\n  }\n}',
+    rest: 'curl -X POST https://oscar.theastraway.com/api/ask \\\n  -H "Content-Type: application/json" \\\n  -d \'{"question": "How do I create a vector index in Neo4j?"}\''
+  };
+  var pane = document.getElementById('code-pane');
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(function(x){ x.classList.remove('active'); });
+      t.classList.add('active');
+      pane.textContent = SNIPPETS[t.dataset.tab];
+    });
+  });
+  document.getElementById('copy-btn').addEventListener('click', function(){
+    navigator.clipboard.writeText(pane.textContent).then(function(){
+      var b = document.getElementById('copy-btn'); b.textContent = 'Copied ✓';
+      setTimeout(function(){ b.textContent = 'Copy'; }, 1600);
+    });
+  });
+
+  // Live demo
+  var q = document.getElementById('question'), btn = document.getElementById('ask-btn'),
+      box = document.getElementById('answer-box'), meta = document.getElementById('answer-meta');
+  document.querySelectorAll('.chip').forEach(function(c){
+    c.addEventListener('click', function(){ q.value = c.textContent; q.focus(); });
+  });
+  function ask(){
+    var question = q.value.trim();
+    if (!question) { q.focus(); return; }
+    btn.disabled = true; btn.textContent = 'Consulting…';
+    box.style.display = 'block'; meta.style.display = 'none';
+    box.innerHTML = 'Oscar is checking the official docs <span class="cursor"></span>';
+    fetch('/api/ask', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({question: question})
+    }).then(function(r){ return r.json().then(function(d){ return {ok:r.ok, status:r.status, d:d}; }); })
+    .then(function(res){
+      if (!res.ok) {
+        box.textContent = res.d && res.d.error ? res.d.error : 'Something went wrong — try again.';
+        if (res.status === 429) box.textContent += ' → Upgrade to Pro above for unlimited queries.';
+      } else {
+        box.textContent = res.d.answer;
+        if (typeof res.d.remaining_today === 'number') {
+          meta.textContent = 'Free tier — ' + res.d.remaining_today + ' queries remaining today. Every answer is grounded in the official Neo4j documentation corpus.';
+          meta.style.display = 'block';
+        }
+      }
+    })
+    .catch(function(){ box.textContent = 'Could not reach Oscar — check your connection and try again.'; })
+    .finally(function(){ btn.disabled = false; btn.textContent = 'Ask Oscar'; });
+  }
+  btn.addEventListener('click', ask);
+  q.addEventListener('keydown', function(e){ if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) ask(); });
+})();
+</script>
+</body>
+</html>

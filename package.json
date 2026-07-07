@@ -1,0 +1,33 @@
+{
+  "name": "oscar-expert-mcp",
+  "version": "1.0.0",
+  "description": "Oscar by Astra AI — MCP server for the knowledge-graph, Neo4j, GraphRAG and ontology expert agent. Cited answers from the official Neo4j documentation corpus.",
+  "type": "module",
+  "bin": {
+    "oscar-expert-mcp": "./index.js"
+  },
+  "main": "index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "neo4j",
+    "knowledge-graph",
+    "graphrag",
+    "cypher",
+    "ontology",
+    "ai-agent"
+  ],
+  "author": "Astra AI <anthony@theastraway.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theastraway/oscar.git"
+  },
+  "homepage": "https://oscar.theastraway.com",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
+}
