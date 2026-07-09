@@ -63,12 +63,26 @@
   .proof .wrap{display:flex;justify-content:space-between;gap:2rem;flex-wrap:wrap}
   .proof .item{display:flex;align-items:center;gap:.7rem;color:var(--parchment-dim);font-size:.95rem;font-weight:500}
   .proof .dot{width:8px;height:8px;border-radius:50%;background:var(--brass);box-shadow:0 0 10px rgba(201,150,59,.8);flex:none}
-  .stats{padding:3.2rem 1.5rem;border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline)}
-  .stats .wrap{display:flex;justify-content:space-between;gap:2rem;flex-wrap:wrap;text-align:center}
-  .stats .stat{flex:1;min-width:12rem}
-  .stats .num{display:block;font-family:'Playfair Display',serif;font-weight:800;font-size:clamp(2.2rem,4.5vw,3.4rem);color:var(--brass-bright);font-variant-numeric:tabular-nums}
-  .stats .lbl{display:block;margin-top:.35rem;color:var(--parchment-dim);font-size:.95rem;letter-spacing:.06em;text-transform:uppercase}
+  .stats{padding:3.2rem 1.5rem;border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline);background:radial-gradient(120% 100% at 50% 0%,rgba(201,150,59,.05),transparent 60%)}
+  .stats-head{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:2.2rem;flex-wrap:wrap}
+  .live-badge{display:inline-flex;align-items:center;gap:.5rem;font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--brass-bright);border:1px solid rgba(201,150,59,.42);border-radius:999px;padding:.34rem .82rem;background:rgba(201,150,59,.06)}
+  .live-dot{width:8px;height:8px;border-radius:50%;background:#4bd07d;box-shadow:0 0 0 0 rgba(75,208,125,.6);animation:livepulse 1.9s infinite}
+  @keyframes livepulse{0%{box-shadow:0 0 0 0 rgba(75,208,125,.55)}70%{box-shadow:0 0 0 9px rgba(75,208,125,0)}100%{box-shadow:0 0 0 0 rgba(75,208,125,0)}}
+  .stats-updated{font-size:.78rem;color:var(--parchment-dim);font-style:italic;opacity:.85}
+  .stat-row{display:flex;justify-content:space-between;gap:2rem;flex-wrap:wrap;text-align:center}
+  .stats .stat{flex:1;min-width:12rem;position:relative}
+  .stats .num{display:inline-flex;align-items:flex-start;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:clamp(2rem,4.4vw,3.2rem);color:var(--brass-bright);font-variant-numeric:tabular-nums;letter-spacing:-.01em;text-shadow:0 0 22px rgba(201,150,59,.18)}
+  .odo-d{display:inline-block;height:1em;line-height:1em;overflow:hidden;width:.62em;position:relative}
+  .odo-col{display:flex;flex-direction:column;transition:transform 1.1s cubic-bezier(.16,1,.3,1)}
+  .odo-col span{height:1em;line-height:1em;display:flex;align-items:center;justify-content:center}
+  .odo-sep{display:inline-block;width:.34em;text-align:center}
+  .odo.bumped{animation:odobump .8s ease}
+  @keyframes odobump{0%,100%{filter:none}28%{filter:drop-shadow(0 0 16px rgba(227,180,92,.85))}}
+  .odo-delta{position:absolute;left:50%;top:-.1em;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;color:#4bd07d;pointer-events:none;animation:odofloat 1.7s ease forwards}
+  @keyframes odofloat{0%{opacity:0;transform:translate(-50%,.5em)}18%{opacity:1}100%{opacity:0;transform:translate(-50%,-1.5em)}}
+  .stats .lbl{display:block;margin-top:.5rem;color:var(--parchment-dim);font-size:.95rem;letter-spacing:.06em;text-transform:uppercase}
   .stats-note{text-align:center;margin-top:1.6rem;color:var(--parchment-dim);font-size:.82rem;font-style:italic;opacity:.75}
+  .no-motion .odo-col{transition:none}
 
   /* DEMO */
   .demo-card{background:var(--ink-raised);border:1px solid var(--hairline);border-radius:14px;padding:2rem;margin-top:2.5rem}
@@ -154,13 +168,19 @@
   </div>
 </section>
 
-<div class="stats">
+<div class="stats" id="stats">
   <div class="wrap">
-    <div class="stat reveal"><span class="num" data-count="38000">38,000+</span><span class="lbl">documents ingested</span></div>
-    <div class="stat reveal"><span class="num" data-count="720000">720,000+</span><span class="lbl">knowledge-graph nodes</span></div>
-    <div class="stat reveal"><span class="num" data-count="1000000">1,000,000+</span><span class="lbl">relationships mapped</span></div>
+    <div class="stats-head reveal">
+      <span class="live-badge"><span class="live-dot"></span>LIVE</span>
+      <span class="stats-updated">updated <span id="stats-ago">just now</span></span>
+    </div>
+    <div class="stat-row">
+      <div class="stat reveal"><span class="odo num" data-key="documents" data-value="38788">38,788</span><span class="lbl">documents ingested</span></div>
+      <div class="stat reveal"><span class="odo num" data-key="nodes" data-value="721553">721,553</span><span class="lbl">knowledge-graph nodes</span></div>
+      <div class="stat reveal"><span class="odo num" data-key="relationships" data-value="1035084">1,035,084</span><span class="lbl">relationships mapped</span></div>
+    </div>
+    <p class="stats-note reveal">Counted live from Oscar&rsquo;s production knowledge graph &middot; refreshes every 15s</p>
   </div>
-  <p class="stats-note reveal">Counted live from Oscar&rsquo;s production knowledge graph</p>
 </div>
 
 <div class="proof">
@@ -305,35 +325,77 @@
       scrollTrigger:{trigger:'.hero', start:'top top', end:'bottom top', scrub:1.2}});
     gsap.to('#portrait', {y:-20, ease:'none',
       scrollTrigger:{trigger:'.origin', start:'top bottom', end:'bottom top', scrub:1.2}});
-    // Stats count-up — reads data-count at animation start so the live fetch below
-    // can raise the target before (or after) the band scrolls into view.
-    // Final text (with +) is already in the DOM, so no-JS/reduced-motion stays correct.
-    document.querySelectorAll('.stats .num[data-count]').forEach(function(el){
-      ScrollTrigger.create({trigger: el, start: 'top 90%', once: true, onEnter: function(){
-        var target = parseInt(el.getAttribute('data-count'), 10);
-        var suffix = el.getAttribute('data-live') === '1' ? '' : '+';
-        var obj = {v: 0};
-        gsap.to(obj, {v: target, duration: 1.8, ease: 'power2.out',
-          onUpdate: function(){ el.textContent = Math.round(obj.v).toLocaleString('en-US') + suffix; },
-          onComplete: function(){ el.dataset.done = '1'; }});
-      }});
-    });
   }
 
-  // Live stats — swap the verified floors for exact production counts
-  fetch('/api/stats').then(function(r){ return r.json(); }).then(function(s){
-    if (!s || s.fallback) return;
-    var map = {'38000': s.documents, '720000': s.nodes, '1000000': s.relationships};
-    document.querySelectorAll('.stats .num[data-count]').forEach(function(el){
-      var live = map[el.getAttribute('data-count')];
-      if (!live) return;
-      el.setAttribute('data-count', live);
-      el.setAttribute('data-live', '1');
-      if (el.dataset.done || document.documentElement.classList.contains('no-motion')) {
-        el.textContent = live.toLocaleString('en-US');
+  // ── Live stats odometer ───────────────────────────────────────────────
+  // Rolling-digit counters that visibly tick as Oscar's production graph grows.
+  // Real numbers only: docs from the tenant API, nodes/relationships counted
+  // straight from the graph via /api/stats. Verified floors stay as the DOM
+  // text so no-JS and crawlers still see real values.
+  (function(){
+    var noMotion = document.documentElement.classList.contains('no-motion');
+    function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
+    function build(el, value){
+      var s = fmt(value), html = '';
+      for (var i=0;i<s.length;i++){
+        var ch = s[i];
+        if (ch >= '0' && ch <= '9'){
+          html += '<span class="odo-d"><span class="odo-col" style="transform:translateY(-'+(ch*10)+'%)">'
+            + '0123456789'.split('').map(function(d){ return '<span>'+d+'</span>'; }).join('')
+            + '</span></span>';
+        } else { html += '<span class="odo-sep">'+ch+'</span>'; }
       }
-    });
-  }).catch(function(){});
+      el.innerHTML = html;
+      el.setAttribute('data-value', value);
+    }
+    function roll(el, value){
+      var old = parseInt(el.getAttribute('data-value')||'0', 10);
+      var s = fmt(value);
+      var digitCount = (s.match(/[0-9]/g)||[]).length;
+      var cols = el.querySelectorAll('.odo-col');
+      if (cols.length !== digitCount){ build(el, value); }
+      else {
+        var di = 0;
+        for (var i=0;i<s.length;i++){ var ch=s[i]; if (ch>='0'&&ch<='9'){ cols[di].style.transform='translateY(-'+(ch*10)+'%)'; di++; } }
+        el.setAttribute('data-value', value);
+      }
+      if (value > old){
+        el.classList.remove('bumped'); void el.offsetWidth; el.classList.add('bumped');
+        var d = value - old;
+        if (d > 0 && d < 100000 && el.parentNode){
+          var f = document.createElement('span'); f.className = 'odo-delta'; f.textContent = '+'+fmt(d);
+          el.parentNode.appendChild(f); setTimeout(function(){ f.remove(); }, 1700);
+        }
+      }
+    }
+    var els = [].slice.call(document.querySelectorAll('.stats .odo'));
+    els.forEach(function(el){ build(el, noMotion ? parseInt(el.getAttribute('data-value'),10) : 0); });
+    // Roll up from 0 once the band is in view (or immediately under reduced motion)
+    function firstRoll(){ els.forEach(function(el){ roll(el, parseInt(el.getAttribute('data-value'),10)); }); }
+    if (noMotion || !window.gsap) { firstRoll(); }
+    else { ScrollTrigger.create({trigger:'#stats', start:'top 85%', once:true, onEnter:firstRoll}); }
+
+    // Poll the live count, tick the "updated" label
+    var lastAt = Date.now();
+    var ago = document.getElementById('stats-ago');
+    function tickAgo(){
+      if (!ago) return;
+      var s = Math.round((Date.now()-lastAt)/1000);
+      ago.textContent = s < 3 ? 'just now' : s + 's ago';
+    }
+    setInterval(tickAgo, 1000);
+    function poll(){
+      fetch('/api/stats').then(function(r){ return r.json(); }).then(function(s){
+        if (!s || s.fallback) return;
+        var map = {documents:s.documents, nodes:s.nodes, relationships:s.relationships};
+        els.forEach(function(el){ var v = map[el.getAttribute('data-key')]; if (v) roll(el, v); });
+        lastAt = Date.now(); tickAgo();
+      }).catch(function(){});
+    }
+    setTimeout(poll, 600);
+    setInterval(poll, 15000);
+  })();
+
   // Reveal fallback — nothing may stay hidden (reduced motion, no-JS-lib, missed intersections)
   setTimeout(function(){
     document.querySelectorAll('.reveal').forEach(function(el){

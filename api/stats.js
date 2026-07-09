@@ -5,7 +5,7 @@
 export const config = { maxDuration: 60 };
 
 const FLOORS = { documents: 38788, nodes: 721553, relationships: 1035084 };
-const TTL_MS = 6 * 60 * 60 * 1000;
+const TTL_MS = 20 * 1000;
 let cache = { at: 0, data: null };
 
 async function cypherCount(statement) {
@@ -29,7 +29,7 @@ async function cypherCount(statement) {
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Cache-Control', 's-maxage=21600, stale-while-revalidate=86400');
+  res.setHeader('Cache-Control', 's-maxage=20, stale-while-revalidate=120');
   if (cache.data && Date.now() - cache.at < TTL_MS) {
     return res.status(200).json(cache.data);
   }
