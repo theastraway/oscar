@@ -68,6 +68,7 @@
   .stats .stat{flex:1;min-width:12rem}
   .stats .num{display:block;font-family:'Playfair Display',serif;font-weight:800;font-size:clamp(2.2rem,4.5vw,3.4rem);color:var(--brass-bright);font-variant-numeric:tabular-nums}
   .stats .lbl{display:block;margin-top:.35rem;color:var(--parchment-dim);font-size:.95rem;letter-spacing:.06em;text-transform:uppercase}
+  .stats-note{text-align:center;margin-top:1.6rem;color:var(--parchment-dim);font-size:.82rem;font-style:italic;opacity:.75}
 
   /* DEMO */
   .demo-card{background:var(--ink-raised);border:1px solid var(--hairline);border-radius:14px;padding:2rem;margin-top:2.5rem}
@@ -159,6 +160,7 @@
     <div class="stat reveal"><span class="num" data-count="720000">720,000+</span><span class="lbl">knowledge-graph nodes</span></div>
     <div class="stat reveal"><span class="num" data-count="1000000">1,000,000+</span><span class="lbl">relationships mapped</span></div>
   </div>
+  <p class="stats-note reveal">Counted live from Oscar&rsquo;s production knowledge graph</p>
 </div>
 
 <div class="proof">
@@ -303,15 +305,35 @@
       scrollTrigger:{trigger:'.hero', start:'top top', end:'bottom top', scrub:1.2}});
     gsap.to('#portrait', {y:-20, ease:'none',
       scrollTrigger:{trigger:'.origin', start:'top bottom', end:'bottom top', scrub:1.2}});
-    // Stats count-up — final text (with +) is already in the DOM, so no-JS/reduced-motion stays correct
+    // Stats count-up — reads data-count at animation start so the live fetch below
+    // can raise the target before (or after) the band scrolls into view.
+    // Final text (with +) is already in the DOM, so no-JS/reduced-motion stays correct.
     document.querySelectorAll('.stats .num[data-count]').forEach(function(el){
-      var target = parseInt(el.getAttribute('data-count'), 10);
-      var obj = {v: 0};
-      gsap.to(obj, {v: target, duration: 1.8, ease: 'power2.out',
-        scrollTrigger: {trigger: el, start: 'top 90%', once: true},
-        onUpdate: function(){ el.textContent = Math.round(obj.v).toLocaleString('en-US') + '+'; }});
+      ScrollTrigger.create({trigger: el, start: 'top 90%', once: true, onEnter: function(){
+        var target = parseInt(el.getAttribute('data-count'), 10);
+        var suffix = el.getAttribute('data-live') === '1' ? '' : '+';
+        var obj = {v: 0};
+        gsap.to(obj, {v: target, duration: 1.8, ease: 'power2.out',
+          onUpdate: function(){ el.textContent = Math.round(obj.v).toLocaleString('en-US') + suffix; },
+          onComplete: function(){ el.dataset.done = '1'; }});
+      }});
     });
   }
+
+  // Live stats — swap the verified floors for exact production counts
+  fetch('/api/stats').then(function(r){ return r.json(); }).then(function(s){
+    if (!s || s.fallback) return;
+    var map = {'38000': s.documents, '720000': s.nodes, '1000000': s.relationships};
+    document.querySelectorAll('.stats .num[data-count]').forEach(function(el){
+      var live = map[el.getAttribute('data-count')];
+      if (!live) return;
+      el.setAttribute('data-count', live);
+      el.setAttribute('data-live', '1');
+      if (el.dataset.done || document.documentElement.classList.contains('no-motion')) {
+        el.textContent = live.toLocaleString('en-US');
+      }
+    });
+  }).catch(function(){});
   // Reveal fallback — nothing may stay hidden (reduced motion, no-JS-lib, missed intersections)
   setTimeout(function(){
     document.querySelectorAll('.reveal').forEach(function(el){
