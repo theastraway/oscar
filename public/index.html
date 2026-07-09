@@ -4,9 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Oscar — the Knowledge Graph Expert Agent | by Astra AI</title>
-<meta name="description" content="Oscar is the AI expert agent for knowledge graphs, Neo4j and GraphRAG — grounded in the complete official Neo4j docs, with citations on every answer. Free tier, MCP + REST, 2-minute setup." />
+<meta name="description" content="Oscar is the AI expert agent for knowledge graphs, Neo4j and GraphRAG — a knowledge graph of 38,000+ documents, 720,000+ nodes and 1,000,000+ relationships built from the complete official Neo4j docs. Citations on every answer. Free tier, MCP + REST, 2-minute setup." />
 <meta property="og:title" content="Oscar — the Knowledge Graph Expert Agent" />
-<meta property="og:description" content="Stop guessing Cypher. Cited answers from the complete official Neo4j documentation corpus. Free tier, MCP + REST." />
+<meta property="og:description" content="Stop guessing Cypher. Cited answers from a 1,000,000+ relationship knowledge graph of the complete official Neo4j docs. Free tier, MCP + REST." />
 <meta property="og:image" content="https://oscar.theastraway.com/img/hero-library.jpg" />
 <meta property="og:url" content="https://oscar.theastraway.com" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -63,6 +63,11 @@
   .proof .wrap{display:flex;justify-content:space-between;gap:2rem;flex-wrap:wrap}
   .proof .item{display:flex;align-items:center;gap:.7rem;color:var(--parchment-dim);font-size:.95rem;font-weight:500}
   .proof .dot{width:8px;height:8px;border-radius:50%;background:var(--brass);box-shadow:0 0 10px rgba(201,150,59,.8);flex:none}
+  .stats{padding:3.2rem 1.5rem;border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline)}
+  .stats .wrap{display:flex;justify-content:space-between;gap:2rem;flex-wrap:wrap;text-align:center}
+  .stats .stat{flex:1;min-width:12rem}
+  .stats .num{display:block;font-family:'Playfair Display',serif;font-weight:800;font-size:clamp(2.2rem,4.5vw,3.4rem);color:var(--brass-bright);font-variant-numeric:tabular-nums}
+  .stats .lbl{display:block;margin-top:.35rem;color:var(--parchment-dim);font-size:.95rem;letter-spacing:.06em;text-transform:uppercase}
 
   /* DEMO */
   .demo-card{background:var(--ink-raised);border:1px solid var(--hairline);border-radius:14px;padding:2rem;margin-top:2.5rem}
@@ -140,13 +145,21 @@
   <div class="wrap">
     <p class="eyebrow reveal">By Astra AI</p>
     <h1 class="reveal">Stop guessing <em>Cypher</em>.</h1>
-    <p class="sub reveal">Oscar is the AI expert agent for knowledge graphs, Neo4j and GraphRAG — grounded in the complete official Neo4j documentation, with citations on every answer. He reads new ML research 24/7, so nothing he tells you is stale.</p>
+    <p class="sub reveal">Oscar is the AI expert agent for knowledge graphs, Neo4j and GraphRAG — grounded in a knowledge graph of 38,000+ documents, 720,000+ nodes and over a million relationships built from the complete official Neo4j documentation, with citations on every answer. He reads new ML research 24/7, so nothing he tells you is stale.</p>
     <div class="cta-row reveal">
       <a class="btn btn-brass" href="#demo">Ask Oscar free</a>
       <a class="btn btn-ghost" href="https://github.com/theastraway/oscar" target="_blank" rel="noopener">View on GitHub</a>
     </div>
   </div>
 </section>
+
+<div class="stats">
+  <div class="wrap">
+    <div class="stat reveal"><span class="num" data-count="38000">38,000+</span><span class="lbl">documents ingested</span></div>
+    <div class="stat reveal"><span class="num" data-count="720000">720,000+</span><span class="lbl">knowledge-graph nodes</span></div>
+    <div class="stat reveal"><span class="num" data-count="1000000">1,000,000+</span><span class="lbl">relationships mapped</span></div>
+  </div>
+</div>
 
 <div class="proof">
   <div class="wrap">
@@ -190,7 +203,7 @@
       <div class="card reveal"><h3>Getting Started</h3><p>Modeling foundations done right.</p></div>
       <div class="card reveal"><h3>Drivers</h3><p>Language drivers and integration patterns.</p></div>
       <div class="card reveal"><h3>Aura</h3><p>Managed-cloud specifics and limits.</p></div>
-      <div class="card wide reveal"><span class="pulse"></span><div><h3>ML research feed — always on</h3><p>Oscar ingests new machine-learning research around the clock. GraphRAG, agent memory, graph ML — his knowledge moves with the field, not a training cutoff.</p></div></div>
+      <div class="card wide reveal"><span class="pulse"></span><div><h3>ML research feed — always on</h3><p>Oscar ingests new machine-learning research around the clock — 38,000+ documents so far, woven into a knowledge graph of 720,000+ nodes and 1,000,000+ relationships. GraphRAG, agent memory, graph ML — his knowledge moves with the field, not a training cutoff.</p></div></div>
     </div>
   </div>
 </section>
@@ -290,6 +303,14 @@
       scrollTrigger:{trigger:'.hero', start:'top top', end:'bottom top', scrub:1.2}});
     gsap.to('#portrait', {y:-20, ease:'none',
       scrollTrigger:{trigger:'.origin', start:'top bottom', end:'bottom top', scrub:1.2}});
+    // Stats count-up — final text (with +) is already in the DOM, so no-JS/reduced-motion stays correct
+    document.querySelectorAll('.stats .num[data-count]').forEach(function(el){
+      var target = parseInt(el.getAttribute('data-count'), 10);
+      var obj = {v: 0};
+      gsap.to(obj, {v: target, duration: 1.8, ease: 'power2.out',
+        scrollTrigger: {trigger: el, start: 'top 90%', once: true},
+        onUpdate: function(){ el.textContent = Math.round(obj.v).toLocaleString('en-US') + '+'; }});
+    });
   }
   // Reveal fallback — nothing may stay hidden (reduced motion, no-JS-lib, missed intersections)
   setTimeout(function(){
