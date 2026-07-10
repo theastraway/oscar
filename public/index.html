@@ -41,7 +41,7 @@
   .brand .o{font-family:'Playfair Display',serif;font-weight:800;font-size:1.5rem;color:var(--parchment);letter-spacing:.04em}
   .brand .by{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--parchment-dim)}
   .navlinks{display:flex;gap:1.75rem;font-size:.9rem;font-weight:500}
-  @media(max-width:760px){.navlinks a:not(.gh){display:none}}
+  @media(max-width:760px){.navlinks a:not(.gh):not(.chat-link){display:none}}
 
   /* HERO */
   .hero{min-height:76svh;display:flex;align-items:center;padding:7rem 0 3rem;position:relative}
@@ -154,8 +154,9 @@
 <nav id="nav">
   <div class="brand"><span class="o">OSCAR</span><span class="by">by Astra AI</span></div>
   <div class="navlinks">
-    <a href="#demo">Demo</a><a href="#corpus">Corpus</a><a href="#quickstart">Quickstart</a><a href="#pricing">Pricing</a>
+    <a href="#corpus">Corpus</a><a href="#quickstart">Quickstart</a><a href="#pricing">Pricing</a>
     <a class="gh" href="https://github.com/theastraway/oscar" target="_blank" rel="noopener">GitHub ↗</a>
+    <a class="chat-link" href="/chat" style="color:var(--brass-bright);font-weight:600">Open Chat →</a>
   </div>
 </nav>
 
@@ -166,7 +167,7 @@
     <h1 class="reveal">Stop guessing <em>Cypher</em>.</h1>
     <p class="sub reveal">The expert agent for knowledge graphs, GraphRAG and graph data science — grounded in a living corpus of tens of thousands of documents, cited on every answer and growing around the clock.</p>
     <div class="cta-row reveal">
-      <a class="btn btn-brass" href="#demo">Ask Oscar free</a>
+      <a class="btn btn-brass" href="/chat">Chat with Oscar — free</a>
       <a class="btn btn-ghost" href="https://github.com/theastraway/oscar" target="_blank" rel="noopener">View on GitHub</a>
     </div>
     <div class="hero-sigil" aria-label="Oscar" role="img">

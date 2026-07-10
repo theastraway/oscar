@@ -1,5 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    { "source": "/chat", "destination": "/chat.html" }
+  ],
   "functions": {
     "api/ask.js": {
       "maxDuration": 120

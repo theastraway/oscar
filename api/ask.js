@@ -91,10 +91,12 @@ export default async function handler(req, res) {
   }
 
   try {
+    // `local` (focused graph search) is far faster than `hybrid` and keeps chat responsive.
+    const mode = typeof req.body?.mode === "string" ? req.body.mode : "local";
     const upstream = await fetch(`${MIND_BASE}/query`, {
       method: "POST",
       headers: { "X-API-Key": upstreamKey, "Content-Type": "application/json" },
-      body: JSON.stringify({ query: question, mode: "hybrid" }),
+      body: JSON.stringify({ query: question, mode }),
       signal: AbortSignal.timeout(110_000),
     });
 
