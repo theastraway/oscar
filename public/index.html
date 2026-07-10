@@ -46,21 +46,13 @@
   /* HERO */
   .hero{min-height:76svh;display:flex;align-items:center;padding-top:7rem;position:relative}
   .sigil-band{display:flex;justify-content:center;align-items:center;padding:clamp(1.5rem,3vw,2.75rem) 1.5rem clamp(2.5rem,5vw,3.5rem);background:var(--ink)}
-  .hero-sigil{width:min(230px,62vw);text-align:center;pointer-events:none}
-  .hero-sigil svg{width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 0 50px rgba(201,150,59,.22))}
-  .sigil-word{font-family:'Playfair Display',serif;font-weight:800;font-size:clamp(1.15rem,2vw,1.6rem);letter-spacing:.36em;color:var(--brass-bright);margin-top:.7rem;padding-left:.38em}
-  .sigil-tag{font-family:'JetBrains Mono',monospace;font-size:.54rem;letter-spacing:.38em;text-transform:uppercase;color:var(--parchment-dim);margin-top:.45rem;padding-left:.4em}
-  .sig-node{transform-box:fill-box;transform-origin:center;animation:sigtwinkle 3.2s ease-in-out infinite}
-  @keyframes sigtwinkle{0%,100%{opacity:.5}50%{opacity:1}}
-  .sig-rot{transform-origin:200px 200px;animation:sigrot 150s linear infinite}
-  @keyframes sigrot{to{transform:rotate(360deg)}}
-  .sig-pulse{stroke-dasharray:70 873;animation:sigpulse 4.2s linear infinite}
-  @keyframes sigpulse{to{stroke-dashoffset:-942}}
-  .sig-halo{transform-box:fill-box;transform-origin:center;animation:sighalo 3s ease-out infinite}
-  @keyframes sighalo{0%{opacity:.55;transform:scale(.55)}100%{opacity:0;transform:scale(1.25)}}
-  .sig-hub{transform-box:fill-box;transform-origin:center;animation:sighub 2.6s ease-in-out infinite}
-  @keyframes sighub{0%,100%{opacity:.85;transform:scale(.96)}50%{opacity:1;transform:scale(1.04)}}
-  @media(prefers-reduced-motion:reduce){.sig-node,.sig-rot,.sig-pulse,.sig-halo,.sig-hub{animation:none}.sig-halo{opacity:.35}}
+  .hero-sigil{width:min(240px,64vw);pointer-events:none}
+  .hero-sigil svg{width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 0 46px rgba(201,150,59,.2))}
+  .sig-node{transform-box:fill-box;transform-origin:center;animation:sigtwinkle 4s ease-in-out infinite}
+  @keyframes sigtwinkle{0%,100%{opacity:.42}50%{opacity:1}}
+  .sig-hub{transform-box:fill-box;transform-origin:center;animation:sighub 3.4s ease-in-out infinite}
+  @keyframes sighub{0%,100%{opacity:.78}50%{opacity:1}}
+  @media(prefers-reduced-motion:reduce){.sig-node,.sig-hub{animation:none}}
   .hero-bg{position:absolute;inset:0;overflow:hidden;z-index:-1}
   .hero-bg img{width:100%;height:118%;object-fit:cover;object-position:center 30%}
   .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(13,11,8,.45) 0%,rgba(13,11,8,.55) 45%,rgba(13,11,8,.96) 92%,var(--ink) 100%)}
@@ -185,10 +177,7 @@
 </section>
 
 <div class="sigil-band">
-  <div class="hero-sigil" id="sigil" aria-label="Oscar — knowledge-graph expert emblem" role="img">
-    <div class="sigil-word">OSCAR</div>
-    <div class="sigil-tag">Knowledge-Graph Expert</div>
-  </div>
+  <div class="hero-sigil" id="sigil" aria-label="Oscar knowledge-graph visualization" role="img"></div>
 </div>
 
 <div class="stats" id="stats">
@@ -350,39 +339,49 @@
       scrollTrigger:{trigger:'.origin', start:'top bottom', end:'bottom top', scrub:1.2}});
   }
 
-  // ── Oscar sigil — knowledge-graph medallion built as SVG ──────────────
+  // ── Oscar sigil — intricate knowledge-graph, sealed in a coin ─────────
   (function(){
     var host = document.getElementById('sigil');
     if (!host) return;
-    var cx = 200, cy = 200;
-    function pt(r, deg){ var a = (deg - 90) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
-    var outer = [], mid = [];
-    for (var i = 0; i < 8; i++) outer.push(pt(116, i * 45));
-    for (var j = 0; j < 4; j++) mid.push(pt(58, 45 + j * 90));
-    function line(a, b, o){ return '<line x1="'+a[0].toFixed(1)+'" y1="'+a[1].toFixed(1)+'" x2="'+b[0].toFixed(1)+'" y2="'+b[1].toFixed(1)+'" stroke="#C9963B" stroke-width="1" opacity="'+o+'"/>'; }
-    function node(p, r, idx){ return '<circle class="sig-node" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="'+r+'" fill="#E3B45C" filter="url(#sigGlow)" style="animation-delay:'+(idx*0.22).toFixed(2)+'s"/>'; }
-    var edges = '';
-    outer.forEach(function(p){ edges += line(p, [cx, cy], 0.28); });
-    for (var k = 0; k < outer.length; k++){ edges += line(outer[k], outer[(k+1) % outer.length], 0.4); }
-    mid.forEach(function(p){ edges += line(p, [cx, cy], 0.32); });
+    // Deterministic organic layout (phyllotaxis) so it reads as a real graph, not a wheel.
+    var N = 34, R = 118, pts = [];
+    for (var i = 0; i < N; i++){
+      var rr = R * Math.sqrt((i + 0.5) / N);
+      var th = i * 2.399963229;              // golden angle
+      pts.push([200 + rr * Math.cos(th), 200 + rr * Math.sin(th), rr]);
+    }
+    // Connect each node to its 2 nearest neighbours → an intricate, evenly-woven mesh.
+    var seen = {}, edges = '';
+    for (var a = 0; a < N; a++){
+      var order = [];
+      for (var b = 0; b < N; b++) if (b !== a){
+        var dx = pts[a][0]-pts[b][0], dy = pts[a][1]-pts[b][1];
+        order.push([b, dx*dx + dy*dy]);
+      }
+      order.sort(function(u,v){ return u[1]-v[1]; });
+      for (var k = 0; k < 2; k++){
+        var j = order[k][0], key = Math.min(a,j)+'-'+Math.max(a,j);
+        if (seen[key]) continue; seen[key] = 1;
+        edges += '<line x1="'+pts[a][0].toFixed(1)+'" y1="'+pts[a][1].toFixed(1)+'" x2="'+pts[j][0].toFixed(1)+'" y2="'+pts[j][1].toFixed(1)+'" stroke="#C9963B" stroke-width="1" opacity="0.3"/>';
+      }
+    }
     var nodes = '';
-    outer.forEach(function(p, idx){ nodes += node(p, 5, idx); });
-    mid.forEach(function(p, idx){ nodes += node(p, 3.6, idx + 8); });
-    var svg = '<svg viewBox="0 0 400 400" role="img" aria-label="Oscar knowledge-graph sigil">'
+    for (var n = 0; n < N; n++){
+      var r = (3.6 - 1.6 * (pts[n][2] / R)).toFixed(1);     // inner nodes larger
+      nodes += '<circle class="sig-node" cx="'+pts[n][0].toFixed(1)+'" cy="'+pts[n][1].toFixed(1)+'" r="'+r+'" fill="#E3B45C" filter="url(#sigGlow)" style="animation-delay:'+((n % 12) * 0.34).toFixed(2)+'s"/>';
+    }
+    var svg = '<svg viewBox="0 0 400 400" role="img" aria-label="Oscar knowledge-graph visualization">'
       + '<defs>'
-      + '<filter id="sigGlow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+      + '<filter id="sigGlow" x="-70%" y="-70%" width="240%" height="240%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
       + '<radialGradient id="sigHub" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#F6D98A"/><stop offset="100%" stop-color="#C9963B"/></radialGradient>'
       + '<radialGradient id="sigDisc" cx="50%" cy="42%" r="62%"><stop offset="0%" stop-color="#17110A"/><stop offset="70%" stop-color="#0C0906"/><stop offset="100%" stop-color="#080604"/></radialGradient>'
       + '</defs>'
-      // coin base — dark disc with a crisp double brass rim so the medallion reads as a distinct seal
       + '<circle cx="200" cy="200" r="150" fill="url(#sigDisc)"/>'
-      + '<circle cx="200" cy="200" r="150" fill="none" stroke="#C9963B" stroke-width="2" opacity=".7"/>'
-      + '<circle cx="200" cy="200" r="140" fill="none" stroke="#C9963B" stroke-width="1" opacity=".35"/>'
-      + '<circle class="sig-pulse" cx="200" cy="200" r="150" fill="none" stroke="#F6D98A" stroke-width="2.5" stroke-linecap="round"/>'
-      + '<g class="sig-rot">' + edges + nodes + '</g>'
-      + '<circle class="sig-halo" cx="200" cy="200" r="26" fill="none" stroke="#E3B45C" stroke-width="1.5"/>'
-      + '<circle class="sig-hub" cx="200" cy="200" r="15" fill="url(#sigHub)" filter="url(#sigGlow)"/>'
-      + '<circle cx="200" cy="200" r="5.5" fill="#0D0B08" opacity=".55"/>'
+      + '<circle cx="200" cy="200" r="150" fill="none" stroke="#C9963B" stroke-width="2" opacity=".65"/>'
+      + '<circle cx="200" cy="200" r="140" fill="none" stroke="#C9963B" stroke-width="1" opacity=".3"/>'
+      + edges + nodes
+      + '<circle class="sig-hub" cx="200" cy="200" r="9" fill="url(#sigHub)" filter="url(#sigGlow)"/>'
+      + '<circle cx="200" cy="200" r="3.4" fill="#0D0B08" opacity=".5"/>'
       + '</svg>';
     host.insertAdjacentHTML('afterbegin', svg);
   })();
