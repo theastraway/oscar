@@ -4,9 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Oscar — the Knowledge Graph Expert Agent | by Astra AI</title>
-<meta name="description" content="Oscar is the AI expert agent for knowledge graphs, Neo4j and GraphRAG — a knowledge graph of 38,000+ documents, 720,000+ nodes and 1,000,000+ relationships built from the complete official Neo4j docs. Citations on every answer. Free tier, MCP + REST, 2-minute setup." />
+<meta name="description" content="Oscar is the AI expert agent for knowledge graphs, GraphRAG and graph data science — grounded in a living knowledge graph of tens of thousands of documents, cited on every answer. Free tier, MCP + REST, 2-minute setup." />
 <meta property="og:title" content="Oscar — the Knowledge Graph Expert Agent" />
-<meta property="og:description" content="Stop guessing Cypher. Cited answers from a 1,000,000+ relationship knowledge graph of the complete official Neo4j docs. Free tier, MCP + REST." />
+<meta property="og:description" content="An AI expert agent for knowledge graphs and GraphRAG, grounded in a vast, continuously-growing knowledge graph. Cited answers. Free tier, MCP + REST." />
 <meta property="og:image" content="https://oscar.theastraway.com/img/hero-library.jpg" />
 <meta property="og:url" content="https://oscar.theastraway.com" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -45,8 +45,10 @@
 
   /* HERO */
   .hero{min-height:76svh;display:flex;align-items:center;padding:7rem 0 3rem;position:relative}
-  .hero-sigil{width:min(190px,48vw);height:300px;margin:1.5rem auto 0;pointer-events:none}
-  .hero-sigil canvas{display:block;width:100%;height:100%}
+  .hero-sigil{width:min(360px,84vw);margin:1.5rem auto 0;text-align:center;pointer-events:none}
+  .sigil-helix{width:100%;height:150px}
+  .sigil-helix canvas{display:block;width:100%;height:100%}
+  .sigil-word{font-family:'Playfair Display',serif;font-weight:800;letter-spacing:.42em;font-size:1.4rem;color:var(--brass-bright);margin-top:.3rem;padding-left:.42em}
   .hero-bg{position:absolute;inset:0;overflow:hidden;z-index:-1}
   .hero-bg img{width:100%;height:118%;object-fit:cover;object-position:center 30%}
   .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(13,11,8,.45) 0%,rgba(13,11,8,.55) 45%,rgba(13,11,8,.96) 92%,var(--ink) 100%)}
@@ -162,12 +164,15 @@
   <div class="wrap">
     <p class="eyebrow reveal">By Astra AI</p>
     <h1 class="reveal">Stop guessing <em>Cypher</em>.</h1>
-    <p class="sub reveal">The AI expert agent for knowledge graphs, Neo4j and GraphRAG — grounded in the complete official Neo4j docs, with citations on every answer. Kept current by a 24/7 research feed.</p>
+    <p class="sub reveal">The expert agent for knowledge graphs, GraphRAG and graph data science — grounded in a living corpus of tens of thousands of documents, cited on every answer and growing around the clock.</p>
     <div class="cta-row reveal">
       <a class="btn btn-brass" href="#demo">Ask Oscar free</a>
       <a class="btn btn-ghost" href="https://github.com/theastraway/oscar" target="_blank" rel="noopener">View on GitHub</a>
     </div>
-    <div class="hero-sigil" id="sigil" aria-label="Oscar knowledge-graph visualization" role="img"></div>
+    <div class="hero-sigil" aria-label="Oscar" role="img">
+      <div class="sigil-helix" id="sigil"></div>
+      <div class="sigil-word">OSCAR</div>
+    </div>
   </div>
 </section>
 
@@ -188,7 +193,7 @@
 
 <div class="proof">
   <div class="wrap">
-    <div class="item reveal"><span class="dot"></span>Complete official Neo4j docs corpus</div>
+    <div class="item reveal"><span class="dot"></span>Tens of thousands of documents</div>
     <div class="item reveal"><span class="dot"></span>Citations on every answer</div>
     <div class="item reveal"><span class="dot"></span>New ML research ingested 24/7</div>
   </div>
@@ -348,21 +353,21 @@
     if (window.ResizeObserver) new ResizeObserver(resize).observe(host);
     else addEventListener('resize', resize);
 
-    var TURNS = 2.6, M = 26;                    // rungs; each has one node per strand
+    var TURNS = 3, M = 34;                       // rungs; each has one node per strand
     var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     function draw(now){
       ctx.clearRect(0, 0, W, H);
-      var cx = W / 2, padY = 20, top = padY, span = H - padY * 2;
-      var radius = Math.min(W * 0.42, 62);
+      var cy = H / 2, padX = 18, left = padX, span = W - padX * 2;
+      var radius = Math.min(H * 0.42, 52);
       var t = reduced ? 0.9 : now * 0.0013;     // rotation phase
-      // Build both strands' points with depth (z from -1 back to +1 front)
+      // Horizontal helix: strands run left→right, twist in the vertical plane
       var A = [], B = [];
       for (var i = 0; i < M; i++){
         var f = i / (M - 1);
         var ang = f * TURNS * Math.PI * 2 + t;
-        var y = top + f * span;
-        A.push({ x: cx + radius * Math.cos(ang),          y: y, z: Math.sin(ang) });
-        B.push({ x: cx + radius * Math.cos(ang + Math.PI), y: y, z: Math.sin(ang + Math.PI) });
+        var x = left + f * span;
+        A.push({ x: x, y: cy + radius * Math.cos(ang),          z: Math.sin(ang) });
+        B.push({ x: x, y: cy + radius * Math.cos(ang + Math.PI), z: Math.sin(ang + Math.PI) });
       }
       // Rungs between the two strands (drawn first, dimmer when far)
       for (var i = 0; i < M; i++){
@@ -517,7 +522,7 @@
       } else {
         box.textContent = res.d.answer;
         if (typeof res.d.remaining_today === 'number') {
-          meta.textContent = 'Free tier — ' + res.d.remaining_today + ' queries remaining today. Every answer is grounded in the official Neo4j documentation corpus.';
+          meta.textContent = 'Free tier — ' + res.d.remaining_today + ' queries remaining today. Every answer comes with citations you can verify.';
           meta.style.display = 'block';
         }
       }
