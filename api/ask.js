@@ -13,7 +13,11 @@
  * security boundary; the hard cap is the tenant's credit balance upstream.
  */
 
-const MIND_BASE = process.env.OSCAR_MIND_BASE || "https://mindapp.onrender.com/developer/v1";
+// Oscar runs on its OWN dedicated MIND web service (oscar-mind.onrender.com) so its
+// heavy corpus ingest + massive KG never share the shared m-i-n-d.ai backend's LLM
+// worker pool — that co-location was starving Oscar chat (queries queued ~100s behind
+// the never-ending ingest and hit the proxy timeout). Isolated process = isolated pool.
+const MIND_BASE = process.env.OSCAR_MIND_BASE || "https://oscar-mind.onrender.com/developer/v1";
 const FREE_PER_IP_PER_DAY = parseInt(process.env.OSCAR_FREE_PER_IP || "10", 10);
 const FREE_GLOBAL_PER_DAY = parseInt(process.env.OSCAR_FREE_GLOBAL || "1000", 10);
 const MAX_QUESTION_CHARS = 2000;
