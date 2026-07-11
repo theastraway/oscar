@@ -203,16 +203,16 @@
 <section id="demo">
   <div class="wrap">
     <p class="eyebrow reveal">Live demo — the real free tier</p>
-    <h2 class="reveal">Ask him <em>anything</em> about graphs.</h2>
+    <h2 class="reveal">Ask him <em>anything</em> about ML &amp; data science.</h2>
     <div class="demo-card reveal">
       <div class="chips">
-        <button class="chip">How do I create a vector index in Neo4j?</button>
-        <button class="chip">When does MERGE create duplicates?</button>
-        <button class="chip">Which GDS algorithm for community detection?</button>
-        <button class="chip">Vector index vs full-text — when to use which?</button>
+        <button class="chip">How do I stop a gradient-boosted model from overfitting?</button>
+        <button class="chip">When should I use embeddings instead of TF-IDF?</button>
+        <button class="chip">Which metric for an imbalanced classification problem?</button>
+        <button class="chip">Bagging vs boosting — when do I reach for each?</button>
       </div>
       <div class="ask-row">
-        <textarea id="question" rows="2" placeholder="Type a Neo4j / knowledge-graph / GraphRAG question…"></textarea>
+        <textarea id="question" rows="2" placeholder="Type a machine-learning or data-science question…"></textarea>
         <button class="btn btn-brass" id="ask-btn">Ask Oscar</button>
       </div>
       <div id="answer-box"></div>
@@ -483,7 +483,7 @@
     cc: 'claude mcp add oscar -- npx -y github:theastraway/oscar',
     cd: '{\n  "mcpServers": {\n    "oscar": {\n      "command": "npx",\n      "args": ["-y", "github:theastraway/oscar"]\n    }\n  }\n}',
     cu: '// .cursor/mcp.json\n{\n  "mcpServers": {\n    "oscar": {\n      "command": "npx",\n      "args": ["-y", "github:theastraway/oscar"]\n    }\n  }\n}',
-    rest: 'curl -X POST https://oscar.theastraway.com/api/ask \\\n  -H "Content-Type: application/json" \\\n  -d \'{"question": "How do I create a vector index in Neo4j?"}\''
+    rest: 'curl -X POST https://oscar.theastraway.com/api/ask \\\n  -H "Content-Type: application/json" \\\n  -d \'{"question": "When should I use embeddings instead of TF-IDF?"}\''
   };
   var pane = document.getElementById('code-pane');
   document.querySelectorAll('.tab').forEach(function(t){
